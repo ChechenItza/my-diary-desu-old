@@ -1,5 +1,5 @@
 # Koondelick-web
-Source code of [Koondelick](koondelick.herokuapp.com)
+Source code of [Koondelick](http://koondelick.herokuapp.com)
 
 ## Stack
 **Frontend:** React + styled components, Material UI, react router  
