@@ -1,5 +1,5 @@
-# Koondelick-web
-Source code of [Koondelick](http://koondelick.herokuapp.com) - a diary app made with React and Node.js.
+# My Diary Desu
+Source code of [my-diary-desu](http://my-diary-desu.herokuapp.com) - a diary app made with React and Node.js.
 
 ## Stack
 **Frontend:** React, React Router, Styled Components, Material UI  
