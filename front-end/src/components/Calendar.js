@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 
 import colors from '../constants/colors'
 import linkGenerator from '../utils/linkGenerator'
+import entryService from '../services/entries'
 
 const CalendarStyled = styled.div`
   display: grid;
@@ -15,6 +16,7 @@ const CalendarStyled = styled.div`
 `
 
 const DayCell = styled.div`
+  position: relative;
   padding: 0.7rem;
   background-color: ${colors.button};
   border-top: 1px solid ${colors.border};
@@ -42,11 +44,24 @@ const Today = styled.span`
   padding-bottom: 0.1rem;
 ` 
 
-const Calendar = ({ date, setDate }) => {
+const EntryIndicator = styled.span`
+  position: absolute;
+  right: 0.7rem;
+
+  font-size: 1.2em;
+  line-height: 1em;
+  font-weight: bold;
+  color: ${colors.primary};
+`
+
+let memoizeDatesWithEntries = {}
+
+const Calendar = ({ date }) => {
+  const [datesWithEntries, setDatesWithEntries] = React.useState([])
+
   const history = useHistory()
   const openJournalPage = (day) => {
     const newDate = new Date(date.getFullYear(), date.getMonth(), day)
-    //setDate(newDate)
 
     const location = {
       pathname: '/entry/' + linkGenerator.genEntryLink(newDate),
@@ -72,6 +87,20 @@ const Calendar = ({ date, setDate }) => {
 
   }
 
+  const hasEntry = (day) => {
+    const selected = new Date(date.getFullYear(), date.getMonth(), day)
+    const dateStr = linkGenerator.genEntryLink(selected)
+    if (memoizeDatesWithEntries[dateStr])
+      return true
+
+    if (datesWithEntries.find(elem => elem === dateStr)) {
+      memoizeDatesWithEntries[dateStr] = true
+      return true
+    } else {
+      return false
+    }
+  }
+
   const generateCalendar = () => { 
     let calendar = []
 
@@ -87,7 +116,8 @@ const Calendar = ({ date, setDate }) => {
           onClick={(e) => { handleDayClick(e, day); }}
           last={(calendar.length + 1) % 7 === 0}
         >
-          {isToday(day) ? <Today>{day}</Today> : day}
+          {isToday(day) ? <Today>{day}</Today> : <span>{day}</span>}
+          {hasEntry(day) ? <EntryIndicator>●</EntryIndicator> : <></>}
         </DayCell>
       )
 
@@ -101,6 +131,14 @@ const Calendar = ({ date, setDate }) => {
     
     return calendar
   }
+
+  useEffect(() => {
+    (async () => {
+      const dates = await entryService.getAll()
+      if (dates !== undefined)
+        setDatesWithEntries(dates)
+    })()
+  }, [date])
 
   return (
     <CalendarStyled>

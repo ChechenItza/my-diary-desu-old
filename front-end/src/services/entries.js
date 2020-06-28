@@ -9,6 +9,20 @@ const setToken = (newToken) => {
   token = `bearer ${newToken}`
 }
 
+const getAll = async () => {
+  const url = `${baseUrl}/all`
+  const config = {
+    headers: { Authorization: token },
+  }
+  try {
+    const response = await axios.get(url, config)
+    return response.data ? response.data.dates : undefined
+  } catch(error) {
+    console.error(`Error while getting an entry from the server`)
+    return undefined
+  }
+}
+
 const get = async (date) => {
   const url = `${baseUrl}/${linkGenerator.genEntryLink(date)}`
   const config = {
@@ -32,4 +46,4 @@ const post = async (date, entry) => {
   return response.data.entry
 }
 
-export default { setToken, get, post }
+export default { setToken, getAll, get, post }

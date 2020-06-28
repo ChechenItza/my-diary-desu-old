@@ -14,6 +14,15 @@ const getToken = request => {
   return null
 }
 
+app.get('/all', async (request, response) => {
+  const userId = jwt.verify(getToken(request), config.TOKEN_SECRET)
+  const user = await User.findById(userId).populate('pages')
+
+  const datesWithEntries = user.pages.map(elem => elem.date)
+
+  response.json({ 'dates': datesWithEntries })
+})
+
 app.get('/:date', async (request, response) => {
   const date = request.params.date
   const userId = jwt.verify(getToken(request), config.TOKEN_SECRET)
